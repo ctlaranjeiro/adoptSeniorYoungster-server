@@ -1,1 +1,1 @@
-# adoptSeniorYoungster-client
+# adoptSeniorYoungster-server
