@@ -266,7 +266,14 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
                         return;
                     }
                     // Send the user's information to the frontend
-                    res.status(200).json(newUser);
+                    User.findById(newUser._id)
+                        .populate('assignedVolunteers')
+                        .then(userFromDB => {
+                            res.status(200).json(userFromDB);
+                        })
+                        .catch(err => {
+                            res.status(400).json({ message: 'Error fetching user after login' });
+                        });
                 });
             });
         });
@@ -477,7 +484,14 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
                         return;
                     }
                     // Send the volunteers's information to the frontend
-                    res.status(200).json(newVolunteer);
+                    Volunteer.findById(newVolunteer._id)
+                        .populate('assignedUsers')
+                        .then(volunteerFromDB => {
+                            res.status(200).json(volunteerFromDB);
+                        })
+                        .catch(err => {
+                            res.status(400).json({ message: 'Error fetching volunteer after login' });
+                        });
                 });
             });
         });
@@ -507,7 +521,16 @@ authRoutes.post('/login/:accountType', (req, res, next) => {
                     res.status(500).json({ message: 'Session save went bad.' });
                     return;
                 }
-                res.status(200).json(theUser);
+
+                User.findById(theUser._id)
+                    .populate('assignedVolunteers')
+                    .then(userFromDB => {
+                        res.status(200).json(userFromDB);
+                    })
+                    .catch(err => {
+                        res.status(400).json({ message: 'Error fetching user after login' });
+                    });
+                
             });
         })(req, res, next);
     }
@@ -530,7 +553,15 @@ authRoutes.post('/login/:accountType', (req, res, next) => {
                     res.status(500).json({ message: 'Session save went bad.' });
                     return;
                 }
-                res.status(200).json(theVolunteer);
+
+                Volunteer.findById(theVolunteer._id)
+                    .populate('assignedUsers')
+                    .then(volunteerFromDB => {
+                        res.status(200).json(volunteerFromDB);
+                    })
+                    .catch(err => {
+                        res.status(400).json({ message: 'Error fetching volunteer after login' });
+                    });
             });
         })(req, res, next);
     }
