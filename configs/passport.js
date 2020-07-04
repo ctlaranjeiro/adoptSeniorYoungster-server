@@ -5,14 +5,16 @@ const User          = require('../models/user');
 const Volunteer     = require('../models/volunteer');
 
 passport.serializeUser((loggedInUser, cb) => {
-  console.log('serializeUser', loggedInUser._id);
+  //console.log('serializeUser', loggedInUser._id);
+  console.log('SERILIAZE USER');
   cb(null, loggedInUser._id);
 });
 
 passport.deserializeUser((userIdFromSession, cb) => {
   User.findById(userIdFromSession)
     .then(user => {
-        console.log('deserialize user:', user);
+        //console.log('deserialize user:', user);
+        console.log('DESERIALIZE USER');
         if(user){
             User.findById(userIdFromSession, (err, userDocument) => {
                 console.log('found user in User Collection');

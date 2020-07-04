@@ -95,8 +95,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             address,
             phoneNumber
         }})
-            .then(updatedUser => {
-                console.log('User personal details updated!', updatedUser);
+            .then(result => {
+                console.log('User personal details updated!', result);
 
                 User.findById(currentId)
                     .then(userFromDB => {
@@ -118,8 +118,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
         User.updateOne({ _id: currentId }, { $set: { 
             notes: userNotes
         }})
-            .then(updatedUser => {
-              console.log('User notes updated!', updatedUser);
+            .then(result => {
+              console.log('User notes updated!', result);
 
               User.findById(currentId)
                     .then(userFromDB => {
@@ -148,8 +148,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                 fullDay: fullDay
             }
         }})
-            .then(updatedUser => {
-                console.log('User schedule preferences updated!', updatedUser);
+            .then(result => {
+                console.log('User schedule preferences updated!', result);
                 
                 User.findById(currentId)
                     .then(userFromDB => {
@@ -177,8 +177,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                 pupil: pupil
             }
         }})
-            .then(updatedUser => {
-                console.log('User specific needs updated!', updatedUser);
+            .then(result => {
+                console.log('User specific needs updated!', result);
                 
                 User.findById(currentId)
                     .then(userFromDB => {
@@ -206,8 +206,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                 address: emergAddress
             }
         }})
-            .then(updatedUser => {
-                console.log('User emergency contact updated!', updatedUser);
+            .then(result => {
+                console.log('User emergency contact updated!', result);
                 
                 User.findById(currentId)
                     .then(userFromDB => {
@@ -233,8 +233,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
         User.updateOne({ _id: currentId }, { $set: { 
             password: hashPass
         }})
-            .then(updatedUser => {
-              console.log('User password updated!', updatedUser);
+            .then(result => {
+              console.log('User password updated!', result);
 
               User.findById(currentId)
                     .then(userFromDB => {
@@ -247,6 +247,80 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             })
             .catch(err => {
               console.log('Error while updating user password in DB:', err);
+            });
+    }
+
+    //ASSIGN VOLUNTEERS
+    if(action === 'assignVolunteers'){
+        let selectedVolunteers = [];
+
+        //if only one volunteer is selected, the return will be a string
+        //if more than one is selected, it will be an array, therefore the use of forEach.
+        if(typeof volunteer === 'string'){
+            selectedVolunteers.push(volunteer);
+        } else{
+            volunteer.forEach(element => {
+              selectedVolunteers.push(element);
+            });
+        }
+
+        //push assigned volunteers to users' assingedVolunteers key
+        User.updateOne({ 
+            _id: currentId,
+            'assignedVolunteers': { $nin: selectedVolunteers }
+        }, { $push: { 
+            assignedVolunteers: selectedVolunteers
+        }})
+            .then(result => {
+                console.log('User assigned volunteers updated with push', result);
+                //set user's hasHelp to true
+                User.updateOne({ _id: currentId }, { $set: { 
+                    hasHelp: true
+                }})
+                    .then(result => {
+                        console.log('User hasHelp updated!', result);
+            
+                        //set isHelping to true, on selected volunteers
+                        selectedVolunteers.forEach(volunteerId => {
+                            Volunteer.updateOne({ _id: volunteerId }, { $set: { 
+                                isHelping: true
+                            }})
+                                .then(result => {
+                                    console.log('volunteer ishelping set to true', result);
+                
+                                    //push user ID to volunteer assigned users
+                                    Volunteer.updateOne({ 
+                                        _id: volunteerId,
+                                        'assignedUsers': { $ne: currentId }
+                                    }, { $push: {
+                                        assignedUsers: currentId
+                                    }})
+                                        .then(result => {
+                                            console.log('volunteer assignedUsers updated with userObjectId', result);
+
+                                            User.findById(currentId)
+                                                .populate('assignedVolunteers')
+                                                .then(userFromDB => {
+                                                    res.status(200).json(userFromDB);
+                                                })
+                                                .catch(err => {
+                                                    console.log('Error:', err);
+                                                    res.status(400).json({ message: 'Error while finding user from DB'});
+                                                });
+                                        })
+                                        .catch(err => {
+                                            console.log('error while assigning user to volunteer', err);
+                                        });
+                                    
+                                })
+                                .catch(err => {
+                                    console.log('error while updating isHelping in volunteer DB', err);
+                                });
+                        });
+                    });
+            })
+            .catch(err => {
+                console.log('Error while updating user assigned volunteers in DB:', err);
             });
     }
 
