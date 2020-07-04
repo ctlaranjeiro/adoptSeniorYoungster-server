@@ -265,12 +265,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
         }
 
         //push assigned volunteers to users' assingedVolunteers key
-        User.updateOne({ 
-            _id: currentId,
-            'assignedVolunteers': { $nin: selectedVolunteers }
-        }, { $push: { 
-            assignedVolunteers: selectedVolunteers
-        }})
+        User.updateOne(
+                { _id: currentId }, 
+                { $addToSet: { assignedVolunteers: { $each: selectedVolunteers} }}
+            )
             .then(result => {
                 console.log('User assigned volunteers updated with push', result);
                 //set user's hasHelp to true
@@ -289,8 +287,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                                     console.log('volunteer ishelping set to true', result);
                 
                                     //push user ID to volunteer assigned users
-                                    Volunteer.updateOne({ 
-                                        _id: volunteerId,
+                                    Volunteer.updateOne(
+                                        { _id: volunteerId,
                                         'assignedUsers': { $ne: currentId }
                                     }, { $push: {
                                         assignedUsers: currentId
@@ -323,6 +321,101 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                 console.log('Error while updating user assigned volunteers in DB:', err);
             });
     }
+
+
+
+    //DELETE ASSIGNED VOLUNTEERS
+    if(action === 'deleteAssignedVolunteer'){
+        let deleteSelected = [];
+
+        if(typeof assignedVolunteer === 'string'){
+            deleteSelected.push(assignedVolunteer);
+        } else{
+            assignedVolunteer.forEach(element => {
+                deleteSelected.push(element);
+            });
+        }
+
+        deleteSelected.forEach(volunteerId => {
+            Volunteer.updateOne({ _id: volunteerId }, { $pull: {
+              assignedUsers: { $in: [ currentId ] }
+            }})
+              .then(result => {
+                //console.log('VOLUNTEER UPDATE RESULT',result);
+      
+                User.updateOne({ _id: uid }, { $pull: {
+                  assignedVolunteers: { $in: [ objectId ] }
+                }})
+                  .then(result => {
+                    //console.log('USER UPDATE RESULT',result);
+      
+                    Volunteer.find({ _id: objectId })
+                      .then(volunteer => {
+                        //console.log('VOLUNTEER RESULT ON FIND:',volunteer);
+                        //console.log('VOLUNTEER ASSIGNED USERS', volunteer[0].assignedUsers);
+                        //console.log('volunteer[0].assignedUsers LENGTH', volunteer[0].assignedUsers.length)
+      
+                        if(volunteer[0].assignedUsers.length === 0){
+                          Volunteer.updateOne({ _id: objectId }, { $set: { 
+                            isHelping: false
+                          }})
+                            .then(result => {
+                              //console.log('VOLUNTEER IS HELPING SET TO FALSE');
+                              
+                              User.find({ _id: uid })
+                                .then(user => {
+                                  //console.log('USER RESULT ON FIND:', user);
+                                  //console.log('USER ASSIGNED USERS', user[0].assignedVolunteers);
+                                  //console.log('user[0].assignedVolunteers LENGTH', user[0].assignedVolunteers.length);
+      
+                                  if(user[0].assignedVolunteers.length === 0){
+                                    User.updateOne({ _id: uid }, { $set: { 
+                                      hasHelp: false
+                                    }})
+                                      .then(result => {
+                                        res.redirect(`/user/${uid}/edit`);
+                                      })
+                                      .catch(err => {
+                                        console.log('Error while updating user hasHelp', err);
+                                      });
+                                  } else{
+                                    res.redirect(`/user/${uid}/edit`);
+                                  }
+                                });
+                            });
+                        } else{
+                          User.find({ _id: uid })
+                            .then(user => {
+                              //console.log('USER RESULT ON FIND:', user);
+                              //console.log('USER ASSIGNED USERS', user[0].assignedVolunteers);
+                              //console.log('user[0].assignedVolunteers LENGTH', user[0].assignedVolunteers.length);
+      
+                              if(user[0].assignedVolunteers.length === 0){
+                                User.updateOne({ _id: uid }, { $set: { 
+                                  hasHelp: false
+                                }})
+                                  .then(result => {
+                                    res.redirect(`/user/${uid}/edit`);
+                                  })
+                                  .catch(err => {
+                                    console.log('Error while updating user hasHelp', err);
+                                  });
+                              } else{
+                                res.redirect(`/user/${uid}/edit`);
+                              }
+                            });
+                        }
+                     });
+                  });
+              })
+              .catch(err => {
+                console.log('Error while updating volunteer - pull user ObjectId from assignedUsers', err);
+              })
+            });
+
+
+    }
+
 
 
 });
