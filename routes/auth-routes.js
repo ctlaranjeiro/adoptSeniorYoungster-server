@@ -267,7 +267,7 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             houseCare,
             displacements,
             grocery,
-            pupil,
+            mentor,
             aboutMe
         } = req.body;
 
@@ -362,8 +362,8 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
         if (grocery) {
         skillsArr.push(grocery);
         }
-        if (pupil) {
-        skillsArr.push(pupil);
+        if (mentor) {
+        skillsArr.push(mentor);
         }
 
         // calculate age based on birthDate
