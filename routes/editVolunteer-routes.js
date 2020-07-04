@@ -1,6 +1,10 @@
 const express    = require('express');
 const editVolunteerRoutes = express.Router();
 
+// require bcrypt for signup and athentiation params edition
+const bcrypt     = require('bcrypt');
+const bcryptSalt = 10;
+
 // require user, volunteer and institution models
 const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
@@ -23,6 +27,10 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
         address,
         volPhoneNumber,
         occupation,
+        aboutMe
+    } = req.body;
+
+    let { 
         //available periods
         morning,
         afternoon,
@@ -35,50 +43,36 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
         houseCare,
         displacements,
         grocery,
-        pupil,
-        aboutMe
+        mentor
     } = req.body;
 
     // ---- CHECKBOX VALUES 
-    const availablePeriods = [];
-
-    if (morning) {
-        availablePeriods.push(morning);
-    }
-    if (afternoon) {
-        availablePeriods.push(afternoon);
-    }
-    if (evening) {
-        availablePeriods.push(evening);
-    }
-    if (night) {
-        availablePeriods.push(night);
-    }
-    if (overNight) {
-        availablePeriods.push(overNight);
-    }
-    if (fullDay) {
-        availablePeriods.push(fullDay);
+    if(fullDay){
+        morning = true;
+        afternoon = true;
+        evening = true;
+        night = true;
+        overNight = true;
+        fullDay = true;
     }
 
-    const skills = [];
-
-    if (healthCare) {
-        skills.push(healthCare);
+    if(!healthCare){
+        healthCare = false;
     }
-    if (houseCare) {
-        skills.push(houseCare);
+    if(!houseCare){
+        houseCare = false;
     }
-    if (displacements) {
-        skills.push(displacements);
+    if(!displacements){
+        displacements = false;
     }
-    if (grocery) {
-        skills.push(grocery);
+    if(!grocery){
+        grocery = false;
     }
-    if (pupil) {
-        skills.push(pupil);
+    if(!pupil){
+        pupil = false;
     }
 
+    // PERSONAL DETAILS
     if(action === 'personalDetails') {
         Volunteer.updateOne({ _id: currentId }, { $set: {
             firstName,
@@ -103,6 +97,62 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
                 console.log('Error:', err);
                 res.status(400).json({ message: 'Erros while updating the volunteer personal detais'})
             });
+    }
+
+    // SKILLS
+    if(action === 'skills') {
+        Volunteer.updateOne({ _id: currentId }, { $set: {
+            skills: {
+                healthCare: healthCare,
+                houseCare: houseCare,
+                displacements: displacements,
+                grocery: grocery,
+                mentor: mentor
+            }
+        }})
+            .then(updateVolunteer => {
+                Volunteer.findById(currentId)
+                    .then(volunteerFromDB => {
+                    res.status(200).json(volunteerFromDB);
+                })
+                    .catch(err => {
+                        console.log('Error:', err);
+                        res.status(400).json({ message: 'Error while finding volunteer from DB' });
+                    });
+            })
+            .catch(err => {
+                console.log('Error:', err);
+                res.status(400).json({ message: 'Erros while updating the volunteer skills'})
+            });
+    }
+
+    // AVAILABILITY
+    if(action === 'availablePeriods') {
+        Volunteer.updateOne({ _id: currentId }, { $set: {
+            availablePeriods: {
+                morning: morning,
+                afternoon: afternoon,
+                evening: evening,
+                night: night,
+                overNight: overNight,
+                fullDay: fullDay
+            }
+        }})
+            .then(updatedVolunteer => {
+                console.log('Volunteer availability updated!', updatedVolunteer);
+
+                Volunteer.findById(currentId)
+                    .then(volunteerFromDB => {
+                        res.status(200).json(volunteerFromDB);
+                    })
+                    .catch(err => {
+                        console.log('Error:', err);
+                        res.status(400).json({ message: 'Error while finding volunteer from DB'});
+                    });
+            })
+            .catch(err => {
+                console.log('Error while updating volunteer availability preferences in DB:', err);
+            })
     }
 });
 
