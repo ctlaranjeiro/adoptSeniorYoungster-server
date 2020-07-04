@@ -34,13 +34,6 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             birthDate,
             address,
             phoneNumber,
-            //schedule preferences
-            morning,
-            afternoon,
-            evening,
-            night,
-            overNight,
-            fullDay,
             //specific needs
             healthCare,
             houseCare,
@@ -52,6 +45,18 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             emergPhoneNumber,
             emergEmail,
             emergAddress
+        } = req.body;
+         
+        
+        //below are interchangeable values depending on fullDay (if it is checked, all of the other are set to true)
+        let {
+            //schedule preferences
+            morning,
+            afternoon,
+            evening,
+            night,
+            overNight,
+            fullDay
         } = req.body;
     
     
@@ -138,43 +143,53 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
 
 
         // ---- CHECKBOX VALUES 
-        const schedulePreferenceArr = [];
+        // const schedulePreferenceArr = [];
 
-        if (morning) {
-        schedulePreferenceArr.push(morning);
-        }
-        if (afternoon) {
-        schedulePreferenceArr.push(afternoon);
-        }
-        if (evening) {
-        schedulePreferenceArr.push(evening);
-        }
-        if (night) {
-        schedulePreferenceArr.push(night);
-        }
-        if (overNight) {
-        schedulePreferenceArr.push(overNight);
-        }
-        if (fullDay) {
-        schedulePreferenceArr.push(fullDay);
-        }
+        // if (morning) {
+        // schedulePreferenceArr.push(morning);
+        // }
+        // if (afternoon) {
+        // schedulePreferenceArr.push(afternoon);
+        // }
+        // if (evening) {
+        // schedulePreferenceArr.push(evening);
+        // }
+        // if (night) {
+        // schedulePreferenceArr.push(night);
+        // }
+        // if (overNight) {
+        // schedulePreferenceArr.push(overNight);
+        // }
+        // if (fullDay) {
+        // schedulePreferenceArr.push(fullDay);
+        // }
 
-        const specificNeedsArr = [];
+        // const specificNeedsArr = [];
 
-        if (healthCare) {
-        specificNeedsArr.push(healthCare);
-        }
-        if (houseCare) {
-        specificNeedsArr.push(houseCare);
-        }
-        if (displacements) {
-        specificNeedsArr.push(displacements);
-        }
-        if (grocery) {
-        specificNeedsArr.push(grocery);
-        }
-        if (pupil) {
-        specificNeedsArr.push(pupil);
+        // if (healthCare) {
+        // specificNeedsArr.push(healthCare);
+        // }
+        // if (houseCare) {
+        // specificNeedsArr.push(houseCare);
+        // }
+        // if (displacements) {
+        // specificNeedsArr.push(displacements);
+        // }
+        // if (grocery) {
+        // specificNeedsArr.push(grocery);
+        // }
+        // if (pupil) {
+        // specificNeedsArr.push(pupil);
+        // }
+
+        // ---- CHECKBOX VALUES 
+        if(fullDay){
+            morning = true;
+            afternoon = true;
+            evening = true;
+            night = true;
+            overNight = true;
+            fullDay = true;
         }
 
 
@@ -206,8 +221,21 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
                 email: lowerCaseLetters(emergEmail),
                 address: capitalizeFirstLetter(emergAddress)
             },
-            schedulePreference: schedulePreferenceArr,
-            specificNeeds: specificNeedsArr,
+            schedulePreference: {
+                morning: morning,
+                afternoon: afternoon,
+                evening: evening,
+                night: night,
+                overNight: overNight,
+                fullDay: fullDay
+            },
+            specificNeeds: {
+                healthCare: healthCare,
+                houseCare: houseCare,
+                displacements: displacements,
+                grocery: grocery,
+                pupil: pupil
+            }
         });
         
         User.findOne({ email }, (err, foundUser) => {
@@ -255,6 +283,18 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             address,
             volPhoneNumber,
             occupation,
+            //skills
+            healthCare,
+            houseCare,
+            displacements,
+            grocery,
+            mentor,
+            aboutMe
+        } = req.body;
+
+        
+        //below are interchangeable values depending on fullDay (if it is checked, all of the other are set to true)
+        let {
             //available periods
             morning,
             afternoon,
@@ -262,14 +302,8 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             night,
             overNight,
             fullDay,
-            //skills
-            healthCare,
-            houseCare,
-            displacements,
-            grocery,
-            pupil,
-            aboutMe
         } = req.body;
+
 
         // CHECK IF FIELDS EXIST
         if (!email) {
@@ -308,8 +342,8 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             res.status(400).json({ message: 'Provide availability: morning, afternoon, evening, night, over night or full day' });
             return;
         }
-        if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
-            res.status(400).json({ message: 'Provide skills: health care, house care, displacements, grocery or pupil' });
+        if (!healthCare && !houseCare && !displacements && !grocery && !mentor) {
+            res.status(400).json({ message: 'Provide skills: health care, house care, displacements, grocery or mentor' });
             return;
         }
 
@@ -327,43 +361,54 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
         }
 
         // ---- CHECKBOX VALUES 
-        const availablePeriodsArr = [];
+        // const availablePeriodsArr = [];
 
-        if (morning) {
-        availablePeriodsArr.push(morning);
-        }
-        if (afternoon) {
-        availablePeriodsArr.push(afternoon);
-        }
-        if (evening) {
-        availablePeriodsArr.push(evening);
-        }
-        if (night) {
-        availablePeriodsArr.push(night);
-        }
-        if (overNight) {
-        availablePeriodsArr.push(overNight);
-        }
-        if (fullDay) {
-        availablePeriodsArr.push(fullDay);
-        }
+        // if (morning) {
+        // availablePeriodsArr.push(morning);
+        // }
+        // if (afternoon) {
+        // availablePeriodsArr.push(afternoon);
+        // }
+        // if (evening) {
+        // availablePeriodsArr.push(evening);
+        // }
+        // if (night) {
+        // availablePeriodsArr.push(night);
+        // }
+        // if (overNight) {
+        // availablePeriodsArr.push(overNight);
+        // }
+        // if (fullDay) {
+        // availablePeriodsArr.push(fullDay);
+        // }
 
-        const skillsArr = [];
+        // const skillsArr = [];
 
-        if (healthCare) {
-        skillsArr.push(healthCare);
-        }
-        if (houseCare) {
-        skillsArr.push(houseCare);
-        }
-        if (displacements) {
-        skillsArr.push(displacements);
-        }
-        if (grocery) {
-        skillsArr.push(grocery);
-        }
-        if (pupil) {
-        skillsArr.push(pupil);
+        // if (healthCare) {
+        // skillsArr.push(healthCare);
+        // }
+        // if (houseCare) {
+        // skillsArr.push(houseCare);
+        // }
+        // if (displacements) {
+        // skillsArr.push(displacements);
+        // }
+        // if (grocery) {
+        // skillsArr.push(grocery);
+        // }
+        // if (mentor) {
+        // skillsArr.push(mentor);
+        // }
+
+
+        // ---- CHECKBOX VALUES 
+        if(fullDay){
+            morning = true;
+            afternoon = true;
+            evening = true;
+            night = true;
+            overNight = true;
+            fullDay = true;
         }
 
         // calculate age based on birthDate
@@ -388,8 +433,21 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             address: capitalizeFirstLetter(address),
             volPhoneNumber,
             occupation: capitalizeFirstLetter(occupation),
-            availablePeriods: availablePeriodsArr,
-            skills: skillsArr,
+            availablePeriods: {
+                morning: morning,
+                afternoon: afternoon,
+                evening: evening,
+                night: night,
+                overNight: overNight,
+                fullDay: fullDay
+            },
+            skills: {
+                healthCare: healthCare,
+                houseCare: houseCare,
+                displacements: displacements,
+                grocery: grocery,
+                mentor: mentor
+            },
             aboutMe,
           });
 

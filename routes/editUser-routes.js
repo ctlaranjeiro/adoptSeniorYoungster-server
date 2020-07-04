@@ -50,22 +50,40 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 
     if (morning) {
         schedulePreferenceArr.push(morning);
+        if (fullDay) {
+            schedulePreferenceArr.pop();
+            schedulePreferenceArr.push(fullDay);
+        }
     }
     if (afternoon) {
         schedulePreferenceArr.push(afternoon);
+        if (fullDay) {
+            schedulePreferenceArr.pop();
+            schedulePreferenceArr.push(fullDay);
+        }
     }
     if (evening) {
         schedulePreferenceArr.push(evening);
+        if (fullDay) {
+            schedulePreferenceArr.pop();
+            schedulePreferenceArr.push(fullDay);
+        }
     }
     if (night) {
         schedulePreferenceArr.push(night);
+        if (fullDay) {
+            schedulePreferenceArr.pop();
+            schedulePreferenceArr.push(fullDay);
+        }
     }
     if (overNight) {
         schedulePreferenceArr.push(overNight);
+        if (fullDay) {
+            schedulePreferenceArr.pop();
+            schedulePreferenceArr.push(fullDay);
+        }
     }
-    if (fullDay) {
-        schedulePreferenceArr.push(fullDay);
-    }
+    
 
     const specificNeedsArr = [];
 
@@ -85,8 +103,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
         specificNeedsArr.push(pupil);
     }
 
-
-    if(action === 'updatePersonalDetails'){
+    //PERSONAL DETAILS
+    if(action === 'personalDetails'){
         User.updateOne({ _id: currentId }, { $set: { 
             firstName,
             lastName,
@@ -95,9 +113,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             phoneNumber
         }})
             .then(updatedUser => {
-                // console.log('UpdatedUser:', updatedUser);
-                // console.log('User personal details updated!');
-                // res.status(200).json(updatedUser);
+                console.log('User personal details updated!', updatedUser);
+
                 User.findById(currentId)
                     .then(userFromDB => {
                         res.status(200).json(userFromDB);
@@ -112,6 +129,55 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
                 res.status(400).json({ message: "Error while updating user's personal details"});
             });
     }
+
+    //NOTES
+    if(action === 'userNotes'){
+        User.updateOne({ _id: currentId }, { $set: { 
+            notes: userNotes
+        }})
+            .then(updatedUser => {
+              console.log('User notes updated!', updatedUser);
+
+              User.findById(currentId)
+                    .then(userFromDB => {
+                        res.status(200).json(userFromDB);
+                    })
+                    .catch(err => {
+                        console.log('Error:', err);
+                        res.status(400).json({ message: 'Error while finding user from DB'});
+                    });
+            })
+            .catch(err => {
+              console.log('Error while updating user notes in DB:', err);
+            });
+    }
+
+
+    //SCHEDULE
+    if(action === 'schedulePreferences'){
+        User.updateOne({ _id: currentId }, { $set: { 
+            schedulePreference: schedulePreferenceArr
+        }})
+            .then(updatedUser => {
+                console.log('User schedule preferences updated!', updatedUser);
+                
+                User.findById(currentId)
+                    .then(userFromDB => {
+                        res.status(200).json(userFromDB);
+                    })
+                    .catch(err => {
+                        console.log('Error:', err);
+                        res.status(400).json({ message: 'Error while finding user from DB'});
+                    });
+            })
+            .catch(err => {
+                console.log('Error while updating user schedule preferences in DB:', err);
+            });
+    }
+
+
+
+
 });
 
 

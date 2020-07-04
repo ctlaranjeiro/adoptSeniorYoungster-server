@@ -25,8 +25,21 @@ const userSchema = new Schema({
     email: { type: String, required: true },
     address: { type: String, required: true }
   },
-  schedulePreference: { type: Array, required: true },
-  specificNeeds: { type: Array, required: true },
+  schedulePreference: {
+    morning: {type: Boolean, default: false},
+    afternoon: {type: Boolean, default: false},
+    evening: {type: Boolean, default: false},
+    night: {type: Boolean, default: false},
+    overNight: {type: Boolean, default: false},
+    fullDay: {type: Boolean, default: false}
+  },
+  specificNeeds: {
+    healthCare: {type: Boolean, default: false},
+    houseCare: {type: Boolean, default: false},
+    displacements: {type: Boolean, default: false},
+    grocery: {type: Boolean, default: false},
+    pupil: {type: Boolean, default: false}
+  },
   hasHelp: { type: Boolean, default: false },
   assignedVolunteers: [{ type: Schema.Types.ObjectId, ref: 'Volunteer' }], // Interligar com volunter.js
   reports: [{ type: Schema.Types.ObjectId, ref: 'Report' }], // Interligar com report.js
