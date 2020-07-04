@@ -5,6 +5,7 @@ const User          = require('../models/user');
 const Volunteer     = require('../models/volunteer');
 
 passport.serializeUser((loggedInUser, cb) => {
+  console.log('serializeUser', loggedInUser._id);
   cb(null, loggedInUser._id);
 });
 
@@ -34,7 +35,7 @@ passport.deserializeUser((userIdFromSession, cb) => {
     })
 });
 
-passport.use('user', new LocalStrategy((email, password, next) => {
+passport.use('user', new LocalStrategy({ usernameField: 'email' }, (email, password, next) => {
   User.findOne({ email }, (err, foundUser) => {
     if (err) {
       next(err);
@@ -52,7 +53,7 @@ passport.use('user', new LocalStrategy((email, password, next) => {
   });
 }));
 
-passport.use('volunteer', new LocalStrategy((email, password, next) => {
+passport.use('volunteer', new LocalStrategy({ usernameField: 'email' }, (email, password, next) => {
     Volunteer.findOne({ email }, (err, foundVolunteer) => {
       if (err) {
         next(err);

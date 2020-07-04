@@ -55,7 +55,7 @@ app.use(session ({
   resave: true,
   saveUnitialized: true,
   rolling: true,
-  cookie: { expires: 60000 }
+  cookie: { expires: 600000 }
 }));
 
 // PASSPORT SETTINGS:
@@ -79,6 +79,7 @@ app.use(
 const index = require('./routes/index');
 app.use('/', index);
 app.use('/api', require('./routes/auth-routes'));
+app.use('/api', require('./routes/editUser-routes'));
 
 
 
