@@ -89,10 +89,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     //PERSONAL DETAILS
     if(action === 'personalDetails'){
         User.updateOne({ _id: currentId }, { $set: { 
-            firstName,
-            lastName,
-            email,
-            address,
+            firstName: capitalizeFirstLetter(firstName),
+            lastName: capitalizeFirstLetter(lastName),
+            email: lowerCaseLetters(email),
+            address: capitalizeFirstLetter(address),
             phoneNumber
         }})
             .then(result => {
@@ -199,11 +199,11 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     if(action === 'emergContact'){
         User.updateOne({ _id: currentId }, { $set: { 
             emergencyContact: {
-                firstName: emergFirstName,
-                lastName: emergLastName,
+                firstName: capitalizeFirstLetter(emergFirstName),
+                lastName: capitalizeFirstLetter(emergLastName),
                 phoneNumber: emergPhoneNumber,
-                email: emergEmail,
-                address: emergAddress
+                email: lowerCaseLetters(emergEmail),
+                address: capitalizeFirstLetter(emergAddress)
             }
         }})
             .then(result => {
