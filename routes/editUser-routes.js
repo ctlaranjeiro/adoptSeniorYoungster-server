@@ -410,9 +410,22 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             fetchUserDB(currentId);
         }
     }
+});
 
+editUserRoutes.delete('/user/:id/edit/deleteAccount', (req, res, next) => {
+    const currentId = req.user._id;
 
-
+    req.session.destroy(() => {
+        User.findByIdAndRemove(currentId)
+        .then(result => {
+            console.log('User account deleted successfully');
+            res.status(200).json({ message: 'User account deleted successfully' });
+        })
+        .catch(err => {
+            console.log('Error while deleting user from DB', err);
+            res.status(400).json({ message:'Error while deleting user from DB' });
+        });
+    });
 });
 
 
