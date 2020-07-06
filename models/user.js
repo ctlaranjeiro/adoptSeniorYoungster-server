@@ -11,9 +11,8 @@ const userSchema = new Schema({
   firstName: { type: String, required: true },
   lastName: { type: String, required: true },
   gender: { type: String, required: true, enum: ['Male', 'Female', 'Other'] },
-  // With Cloudinary
-  imgName: String,
-  imgPath: String,
+  // Cloudinary Profile picture
+  profilePicture: String,
   birthDate: { type: Date, required: true },
   age: Number,
   address: { type: String, required: true },
