@@ -307,9 +307,8 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     }
 
 
-
     //DELETE ASSIGNED VOLUNTEERS
-    if(action === 'deleteAssignedVolunteer'){
+    if(action === 'deleteAssignedVolunteers'){
         let deleteSelected = [];
 
         if(typeof assignedVolunteer === 'string'){
@@ -320,95 +319,106 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             });
         }
 
-        try{
-            deleteSelected.forEach(volunteerId => {
-                Volunteer.updateOne({ _id: volunteerId }, { $pull: {
-                  assignedUsers: { $in: [ currentId ] }
-                }})
+        
+        deleteSelected.forEach(volunteerId => {
+            Volunteer.updateOne({ _id: volunteerId }, { $pull: {
+                assignedUsers: { $in: [ currentId ] }
+            }})
+                .then(result => {
+                    console.log('Volunteer updated - removed user from assignedUsers:',result);
+        
+                    User.updateOne({ _id: currentId }, { $pull: {
+                    assignedVolunteers: { $in: [ volunteerId ] }
+                    }})
                     .then(result => {
-                        console.log('Volunteer updated - removed user from assignedUsers:',result);
+                        console.log('User updated - removed assigned Volunteer:',result);
+        
+                        Volunteer.find({ _id: volunteerId })
+                            .then(volunteer => {
+                                //console.log('VOLUNTEER RESULT ON FIND:',volunteer);
+                                console.log('volunteer[0].assignedUsers:', volunteer[0].assignedUsers);
+                                //console.log('volunteer[0].assignedUsers LENGTH', volunteer[0].assignedUsers.length)
             
-                        User.updateOne({ _id: currentId }, { $pull: {
-                        assignedVolunteers: { $in: [ volunteerId ] }
-                        }})
-                        .then(result => {
-                            console.log('User updated - removed assigned Volunteer:',result);
-            
-                            Volunteer.find({ _id: volunteerId })
-                                .then(volunteer => {
-                                    //console.log('VOLUNTEER RESULT ON FIND:',volunteer);
-                                    console.log('volunteer[0].assignedUsers:', volunteer[0].assignedUsers);
-                                    //console.log('volunteer[0].assignedUsers LENGTH', volunteer[0].assignedUsers.length)
-                
-                                    if(volunteer[0].assignedUsers.length === 0){
-                                    Volunteer.updateOne({ _id: volunteerId }, { $set: { 
-                                        isHelping: false
-                                    }})
-                                        .then(result => {
-                                            console.log('VOLUNTEER IS HELPING SET TO FALSE');
-                                            
-                                            User.find({ _id: currentId })
-                                                .then(user => {
-                                                    //console.log('USER RESULT ON FIND:', user);
-                                                    console.log('user[0].assignedVolunteers', user[0].assignedVolunteers);
-                                                    //console.log('user[0].assignedVolunteers LENGTH', user[0].assignedVolunteers.length);
-                        
-                                                    if(user[0].assignedVolunteers.length === 0){
-                                                            User.updateOne({ _id: currentId }, { $set: { 
-                                                            hasHelp: false
-                                                            }})
-                                                                .then(result => {
-                                                                    console.log('Users has help set to false if length is 0');
-                                                                })
-                                                                .catch(err => {
-                                                                    res.status(400).json({ message: 'Error while updating user has help to false'});
-                                                                });
-                                                        } 
-                                                })
-                                                .catch(err => {
-                                                    console.log('Error while finding user in DB', err);
-                                                });
-                                        })
-                                        .catch(err => {
-                                            console.log('Error while updating volunteer isHelping');
-                                        });
-                                    } else{
+                                if(volunteer[0].assignedUsers.length === 0){
+                                Volunteer.updateOne({ _id: volunteerId }, { $set: { 
+                                    isHelping: false
+                                }})
+                                    .then(result => {
+                                        console.log('VOLUNTEER IS HELPING SET TO FALSE');
+                                        
                                         User.find({ _id: currentId })
-                                            .then(userFromDB => {
+                                            .then(user => {
                                                 //console.log('USER RESULT ON FIND:', user);
-                                                //console.log('USER ASSIGNED USERS', user[0].assignedVolunteers);
+                                                console.log('user[0].assignedVolunteers', user[0].assignedVolunteers);
                                                 //console.log('user[0].assignedVolunteers LENGTH', user[0].assignedVolunteers.length);
-                        
-                                                if(userFromDB[0].assignedVolunteers.length === 0){
-                                                    User.updateOne({ _id: currentId }, { $set: { 
-                                                    hasHelp: false
-                                                    }})
-                                                        .then(result => {
-                                                            console.log('Users has help set to false if length is 0');
-                                                        })
-                                                        .catch(err => {
-                                                            res.status(400).json({ message: 'Error while updating user has help to false'});
-                                                        });
+                    
+                                                if(user[0].assignedVolunteers.length === 0){
+                                                        User.updateOne({ _id: currentId }, { $set: { 
+                                                        hasHelp: false
+                                                        }})
+                                                            .then(result => {
+                                                                console.log('Users has help set to false if length is 0');
+                                                                if(volunteerId === deleteSelected[deleteSelected.length-1]){
+                                                                    fetchUserDB(currentId);
+                                                                }
+                                                            })
+                                                            .catch(err => {
+                                                                res.status(400).json({ message: 'Error while updating user has help to false'});
+                                                            });
+                                                } else{
+                                                    if(volunteerId === deleteSelected[deleteSelected.length-1]){
+                                                        fetchUserDB(currentId);
+                                                    }
                                                 }
                                             })
                                             .catch(err => {
-                                                console.log('Error while finding user in DB');
+                                                console.log('Error while finding user in DB', err);
                                             });
-                                    }
-                                })
-                                .catch(err => {
-                                    console.log('Error while finding volunteer in DB');
-                                });
-                        });
-                    })
-                    .catch(err => {
-                        console.log('Error while updating volunteer - pull userId from assignedUsers', err);
-                        res.status(400).json({ message: 'Error while removing userId from Volunteer assignedUsers'});
+                                    })
+                                    .catch(err => {
+                                        console.log('Error while updating volunteer isHelping');
+                                    });
+                                } else{
+                                    User.find({ _id: currentId })
+                                        .then(userFromDB => {
+                                            //console.log('USER RESULT ON FIND:', user);
+                                            //console.log('USER ASSIGNED USERS', user[0].assignedVolunteers);
+                                            //console.log('user[0].assignedVolunteers LENGTH', user[0].assignedVolunteers.length);
+                    
+                                            if(userFromDB[0].assignedVolunteers.length === 0){
+                                                User.updateOne({ _id: currentId }, { $set: { 
+                                                hasHelp: false
+                                                }})
+                                                    .then(result => {
+                                                        console.log('Users has help set to false if length is 0');
+                                                        if(volunteerId === deleteSelected[deleteSelected.length-1]){
+                                                            fetchUserDB(currentId);
+                                                        }
+                                                    })
+                                                    .catch(err => {
+                                                        res.status(400).json({ message: 'Error while updating user has help to false'});
+                                                    });
+                                            } else {
+                                                if(volunteerId === deleteSelected[deleteSelected.length-1]){
+                                                    fetchUserDB(currentId);
+                                                }
+                                            }
+                                        })
+                                        .catch(err => {
+                                            console.log('Error while finding user in DB');
+                                        });
+                                }
+                            })
+                            .catch(err => {
+                                console.log('Error while finding volunteer in DB');
+                            });
                     });
-            });
-        } finally {
-            fetchUserDB(currentId);
-        }
+                })
+                .catch(err => {
+                    console.log('Error while updating volunteer - pull userId from assignedUsers', err);
+                    res.status(400).json({ message: 'Error while removing userId from Volunteer assignedUsers'});
+                });
+        });
     }
 });
 

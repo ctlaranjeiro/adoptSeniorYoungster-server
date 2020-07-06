@@ -18,8 +18,8 @@ const volunteerSchema = new Schema({
     // return firstNameInitial, lastNameInitial;
     // }
   },
-  // With Cloudinary
-  imgName: String,
+  // Cloudinary Profile picture
+  profilePicture: String,
   imgPath: String,
   birthDate: { type: Date, required: true },
   age: Number,
