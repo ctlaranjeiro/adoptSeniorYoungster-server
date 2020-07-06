@@ -81,6 +81,8 @@ app.use('/', index);
 app.use('/api', require('./routes/auth-routes'));
 app.use('/api', require('./routes/editUser-routes'));
 app.use('/api', require('./routes/editVolunteer-routes'));
+app.use('/api', require('./routes/reviews-routes'));
+
 
 
 
