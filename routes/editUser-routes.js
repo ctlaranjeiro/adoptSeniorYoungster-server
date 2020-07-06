@@ -413,18 +413,22 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 });
 
 editUserRoutes.delete('/user/:id/edit/deleteAccount', (req, res, next) => {
-    const currentId = req.user._id;
+    const currentId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(currentId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+      }
 
     req.session.destroy(() => {
         User.findByIdAndRemove(currentId)
-        .then(result => {
-            console.log('User account deleted successfully');
-            res.status(200).json({ message: 'User account deleted successfully' });
-        })
-        .catch(err => {
-            console.log('Error while deleting user from DB', err);
-            res.status(400).json({ message:'Error while deleting user from DB' });
-        });
+            .then((result) => {
+                console.log(`User ${result.firstName} ${result.lastName} account successfully deleted`);
+                res.json({ message: `User ${result.firstName} ${result.lastName} account successfully deleted`, result});
+            })
+            .catch(err => {
+                console.log(`An error occurred while attempting do delete the user account ${firstName, lastName} from DB!`, err);
+                res.status(400).json({ message: `An error occurred while attempting do delete the user account ${firstName, lastName} from DB!` })
+            });
     });
 });
 

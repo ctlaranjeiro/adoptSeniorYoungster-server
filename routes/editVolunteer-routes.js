@@ -1,5 +1,6 @@
 const express    = require('express');
 const editVolunteerRoutes = express.Router();
+const mongoose = require('mongoose');
 
 // require bcrypt for signup and athentiation params edition
 const bcrypt     = require('bcrypt');
@@ -301,13 +302,29 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
                     res.status(400).json({ message: 'Error while removing volunteerId from user "assignedVolunteers" field'});
                 });
         });
-    
-
-        
     }
+});
 
-    // DELETE VOLUNTEER ACOUNT
+// DELETE VOLUNTEER ACOUNT
 
+editVolunteerRoutes.delete('/volunteer/:id/edit/deleteAccount', (req, res, next) => {
+    const currentId = req.params.id;
+
+    if (!mongoose.Types.ObjectId.isValid(currentId)) {
+        res.status(400).json({ message: 'Specified id is not valid' });
+      }
+
+    req.session.destroy(() => {
+        Volunteer.findByIdAndRemove(currentId)
+            .then((result) => {
+                console.log(`Volunteer ${result.firstName} ${result.lastName} account successfully deleted`);
+                res.json({ message: `Volunteer ${result.firstName} ${result.lastName} account successfully deleted`, result});
+            })
+            .catch(err => {
+                console.log(`An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!`, err);
+                res.status(400).json({ message: `An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!` })
+            });
+    });
 });
 
 module.exports = editVolunteerRoutes;
