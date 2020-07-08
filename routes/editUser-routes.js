@@ -423,11 +423,7 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 });
 
 editUserRoutes.delete('/user/:id/edit/deleteAccount', (req, res, next) => {
-    const currentId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(currentId)) {
-        res.status(400).json({ message: 'Specified id is not valid' });
-      }
+    const currentId = req.user._id;
 
     req.session.destroy(() => {
         User.findByIdAndRemove(currentId)

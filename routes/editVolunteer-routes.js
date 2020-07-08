@@ -308,11 +308,7 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
 // DELETE VOLUNTEER ACOUNT
 
 editVolunteerRoutes.delete('/volunteer/:id/edit/deleteAccount', (req, res, next) => {
-    const currentId = req.params.id;
-
-    if (!mongoose.Types.ObjectId.isValid(currentId)) {
-        res.status(400).json({ message: 'Specified id is not valid' });
-      }
+    const currentId = req.user._id;
 
     req.session.destroy(() => {
         Volunteer.findByIdAndRemove(currentId)
