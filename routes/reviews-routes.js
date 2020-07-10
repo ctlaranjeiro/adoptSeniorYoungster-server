@@ -1,7 +1,7 @@
 const express           = require('express');
 const reviewsRoutes     = express.Router();
 
-// require user, volunteer and institution models
+// require user, volunteer and review models
 const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 const Review = require('../models/review');
