@@ -25,7 +25,6 @@ reportsRoutes.post('/volunteer/:id/submitReport', (req, res, next) => {
     }
 
     const userId = subject;
-    // currentId = author;
 
     const newReport = new Report({
         author: currentId,
@@ -40,7 +39,7 @@ reportsRoutes.post('/volunteer/:id/submitReport', (req, res, next) => {
 
     Report.findOne({ $and: [{ 'author': currentId }, { 'subject': userId}] })
         .then(reportFromDB => {
-        //console.log('report from DB: ', reportFromDB);
+            // console.log('report from DB: ', reportFromDB);
             if(reportFromDB){
                 Report.updateOne({ $and: [{ 'author': currentId }, { 'subject': userId}] },
                 { $push: { 
@@ -55,24 +54,8 @@ reportsRoutes.post('/volunteer/:id/submitReport', (req, res, next) => {
                     }
                 }})
                 .then(result => {
-                    User.updateOne({ _id: userId}, { $push: {
-                        'reports': {
-                            $each: [report],
-                            $position: 0
-                        }
-                    }})
-                        .then(result => {
-                            console.log('New report created for the user', result);
-
-                            const reports = user.reports;
-                            console.log('Reports in user DB:', reports);
-
-                            getVolunteerDB(currentId);
-                        })
-                        .catch(err => {
-                            console.log('Error while creating new report for the user', err);
-                            res.status(400).json({ message: 'Error wile creating a new roeport for the user'});
-                        })
+                    console.log('Report updated', result);
+                    getVolunteerDB(currentId);
                 })
                 .catch(err => {
                     console.log('Error while pushing report to DB', err);
@@ -81,24 +64,12 @@ reportsRoutes.post('/volunteer/:id/submitReport', (req, res, next) => {
             } else {
                 newReport.save()
                     .then(report => {
-                        //console.log('New Report saved:', report);
-
-                        const userId = report.subject;const reportId = report._id;
-                        const newReport = report;
-                        
-                        // console.log('userId', userId);
-                        // console.log('Report ID: ', report._id);
-            
-                        User.findByIdAndUpdate({ _id: userId }, { $push: { 
-                        reports: {
-                            author: currentId,
-                            subject: userId,
-                            text: newReport
-                        }
-                        }})
+                        // console.log('New Report saved:', report);
+                        const reportId = report._id;
+                        User.findByIdAndUpdate({ _id: userId }, { $push: { reports: reportId }})
                             .then(result => {
                                 console.log('user reports updated! Result:', result);
-                                res.redirect(`/volunteer/${currentId}`);
+                                getVolunteerDB(currentId);
                             })
                             .catch(err => {
                                 console.log('Error while updating reports in user', err);
