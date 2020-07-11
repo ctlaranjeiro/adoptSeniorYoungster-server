@@ -6,7 +6,6 @@ const bcrypt            = require('bcrypt');
 const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 const Institution = require('../models/institution');
-const { restart } = require('nodemon');
 
 editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     const currentUser = req.user;
