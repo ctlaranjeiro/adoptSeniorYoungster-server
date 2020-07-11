@@ -6,6 +6,7 @@ const bcrypt            = require('bcrypt');
 const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 const Institution = require('../models/institution');
+const { restart } = require('nodemon');
 
 editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     const currentUser = req.user;
@@ -213,6 +214,22 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
             })
             .catch(err => {
                 console.log('Error while updating user emergency contact in DB:', err);
+            });
+    }
+
+
+    //PROFILE PICTURE
+    if(action === "profilePicture"){
+        const { profilePicture } = req.body;
+
+        User.updateOne({ _id: currentId }, { $set: { profilePicture: profilePicture }})
+            .then(result => {
+                console.log('User profile picture updated!', result);
+                fetchUserDB(currentId);
+            })
+            .catch(err => {
+                console.log('Error while updating user profile picture', err);
+                res.status(400).json({ message: 'Error while updating user profile picture'});
             });
     }
 
@@ -426,14 +443,30 @@ editUserRoutes.delete('/user/:id/edit/deleteAccount', (req, res, next) => {
     const currentId = req.user._id;
 
     req.session.destroy(() => {
-        User.findByIdAndRemove(currentId)
-            .then((result) => {
-                console.log(`User ${result.firstName} ${result.lastName} account successfully deleted`);
-                res.json({ message: `User ${result.firstName} ${result.lastName} account successfully deleted`, result});
+        Volunteer.updateMany({ assignedUsers: { $in: [currentId] }}, {$pull: { assignedUsers: { $in: [currentId] }}})
+            .then(resultFromPull => {
+                console.log('Volunteers documents updated while pulling currentId from assignedUsers', resultFromPull);
+                Volunteer.updateMany({ assignedUsers: { $size : 0 } }, { $set: { isHelping: false }})
+                    .then(resultFromSet => {
+                        console.log('Success while updating volunteers with no assignedUsers to isHelping: false', resultFromSet);
+                        User.findByIdAndRemove(currentId)
+                            .then((result) => {
+                                console.log(`User account successfully deleted`);
+                                res.json({ message: `User account successfully deleted` });
+                            })
+                            .catch(err => {
+                                console.log(`An error occurred while attempting do delete the user account ${firstName, lastName} from DB!`, err);
+                                res.status(400).json({ message: `An error occurred while attempting do delete the user account ${firstName, lastName} from DB!` })
+                            });
+                    })
+                    .catch(err => {
+                        console.log('Error while updating many and setting volunteer isHelping to false', err);
+                        res.status(400).json({ message: 'Error while updating many and setting volunteer isHelping to false' });
+                    });
             })
             .catch(err => {
-                console.log(`An error occurred while attempting do delete the user account ${firstName, lastName} from DB!`, err);
-                res.status(400).json({ message: `An error occurred while attempting do delete the user account ${firstName, lastName} from DB!` })
+                console.log('Error while updating and pulling currentId from assignedUser in Volunteer collection', err);
+                res.status(400).json({ message: 'Error while updating and pulling currentId from assignedUser in Volunteer collection' });
             });
     });
 });

@@ -9,17 +9,8 @@ const institutionSchema = new Schema({
   name: { type: String, required: true },
   webpageUrl: { type: String },
   institutionType: { type: Array, required: true/* , enum: ['Health Care', 'Parish', 'Public', 'Court', 'Social Support', 'Retirement Home'] */ },
-  // without Cloudinary
-  avatarUrl: {
-    type: String,
-    default: (nameInitial) => {
-    nameInitial = this.name[0];
-    return nameInitial;
-    }
-  },
-  // with Cloudinary
-  // imgName: String,
-  // imgPath: String,
+  // Cloudinary Profile picture
+  profilePicture: String,
   adress: { type: String, required: true },
   phoneNumber: { type: Number, required: true, minlength: 9, maxlength: 9 },
   socialMedia: { type: Array }

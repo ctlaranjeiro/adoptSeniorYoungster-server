@@ -20,7 +20,6 @@ const volunteerSchema = new Schema({
   },
   // Cloudinary Profile picture
   profilePicture: String,
-  imgPath: String,
   birthDate: { type: Date, required: true },
   age: Number,
   address: { type: String, required: true },

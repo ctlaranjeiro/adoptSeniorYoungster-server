@@ -2,7 +2,6 @@ const express    = require('express');
 const authRoutes = express.Router();
 const passport   = require('passport');
 const bcrypt     = require('bcrypt');
-const uploadCloud = require('../configs/cloudinary.js');
 
 
 // require user, volunteer and institution models
@@ -10,7 +9,7 @@ const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 const Institution = require('../models/institution');
 
-authRoutes.post('/signup/:accountType', uploadCloud.single("profilePicture"), (req, res, next) => {
+authRoutes.post('/signup/:accountType', (req, res, next) => {
     const accountType = req.params.accountType;
 
     function capitalizeFirstLetter(string) {
@@ -36,6 +35,7 @@ authRoutes.post('/signup/:accountType', uploadCloud.single("profilePicture"), (r
             birthDate,
             address,
             phoneNumber,
+            profilePicture,
             //specific needs
             healthCare,
             houseCare,
@@ -204,9 +204,6 @@ authRoutes.post('/signup/:accountType', uploadCloud.single("profilePicture"), (r
         const salt     = bcrypt.genSaltSync(10);
         const hashPass = bcrypt.hashSync(password, salt);
 
-        // CLOUDINARY PROFILE PICTURE
-        const profilePicture = req.file.secure_url;
-
         // NEW USER
         const newUser = new User({
             email: lowerCaseLetters(email),
@@ -295,6 +292,7 @@ authRoutes.post('/signup/:accountType', uploadCloud.single("profilePicture"), (r
             address,
             volPhoneNumber,
             occupation,
+            profilePicture,
             //skills
             healthCare,
             houseCare,
@@ -445,6 +443,7 @@ authRoutes.post('/signup/:accountType', uploadCloud.single("profilePicture"), (r
             address: capitalizeFirstLetter(address),
             volPhoneNumber,
             occupation: capitalizeFirstLetter(occupation),
+            profilePicture,
             availablePeriods: {
                 morning: morning,
                 afternoon: afternoon,

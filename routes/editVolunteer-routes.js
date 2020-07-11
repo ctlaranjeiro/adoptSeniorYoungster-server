@@ -177,6 +177,21 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
             })
     }
 
+    //PROFILE PICTURE
+    if(action === "profilePicture"){
+        const { profilePicture } = req.body;
+
+        Volunteer.updateOne({ _id: currentId }, { $set: { profilePicture: profilePicture }})
+            .then(result => {
+                console.log('Volunteer profile picture updated!', result);
+                fetchVolunteerDB(currentId);
+            })
+            .catch(err => {
+                console.log('Error while updating volunteer profile picture', err);
+                res.status(400).json({ message: 'Error while updating volunteer profile picture'});
+            });
+    }
+
     // LOGIN PASSWORD
     if(action === 'password') {
         const salt = bcrypt.genSaltSync(10);
@@ -311,14 +326,30 @@ editVolunteerRoutes.delete('/volunteer/:id/edit/deleteAccount', (req, res, next)
     const currentId = req.user._id;
 
     req.session.destroy(() => {
-        Volunteer.findByIdAndRemove(currentId)
-            .then((result) => {
-                console.log(`Volunteer ${result.firstName} ${result.lastName} account successfully deleted`);
-                res.json({ message: `Volunteer ${result.firstName} ${result.lastName} account successfully deleted`, result});
+        User.updateMany({ assignedVolunteers: { $in: [currentId] }}, {$pull: { assignedVolunteers: { $in: [currentId] }}})
+            .then(resultFromPull => {
+                console.log('User documents updated while pulling currentId from assignedVolunteers', resultFromPull);
+                User.updateMany({ assignedVolunteers: { $size : 0 } }, { $set: { hasHelp: false }})
+                    .then(resultFromSet => {
+                        console.log('Success while updating users with no assignedVolunteers to hasHelp: false', resultFromSet);
+                        Volunteer.findByIdAndRemove(currentId)
+                            .then((result) => {
+                                console.log(`Volunteer account successfully deleted`);
+                                res.json({ message: `Volunteer account successfully deleted` });
+                            })
+                            .catch(err => {
+                                console.log(`An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!`, err);
+                                res.status(400).json({ message: `An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!` })
+                            });
+                    })
+                    .catch(err => {
+                        console.log('Error while updating many and setting user hasHelp to false', err);
+                        res.status(400).json({ message: 'Error while updating many and setting user hasHelp to false' });
+                    });
             })
             .catch(err => {
-                console.log(`An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!`, err);
-                res.status(400).json({ message: `An error occurred while attempting do delete the volunteer account ${firstName, lastName} from DB!` })
+                console.log('Error while updating and pulling currentId from assignedVolunteers in User collection', err);
+                res.status(400).json({ message: 'Error while updating and pulling currentId from assignedVolunteers in User collection' });
             });
     });
 });
