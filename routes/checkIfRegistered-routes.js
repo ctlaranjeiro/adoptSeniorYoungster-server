@@ -3,7 +3,7 @@ const registeredRoutes = express.Router();
 const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 
-registeredRoutes.get('/checkIfRegistered', (req, res, next) => {
+registeredRoutes.post('/checkIfRegistered', (req, res, next) => {
     const { email } = req.body;
 
     User.findOne({ email }, (err, foundUser) => {
