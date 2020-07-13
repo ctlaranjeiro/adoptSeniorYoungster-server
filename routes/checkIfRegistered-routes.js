@@ -4,7 +4,7 @@ const User = require('../models/user');
 const Volunteer = require('../models/volunteer');
 
 registeredRoutes.get('/checkIfRegistered', (req, res, next) => {
-    const { email } = req.data;
+    const { email } = req.body.data;
 
     User.findOne({ email }, (err, foundUser) => {
         if(err){
