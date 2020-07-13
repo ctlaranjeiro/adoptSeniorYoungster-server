@@ -10,9 +10,7 @@ registeredRoutes.get('/checkIfRegistered', (req, res, next) => {
         if(err){
             res.status(500).json({message: "User email check went bad."});
             return;
-        }
-        
-        if (foundUser) {
+        } else if (foundUser) {
             res.status(400).json({ message: 'Email already registered. Try to login' });
             return;
         } else{
@@ -20,15 +18,12 @@ registeredRoutes.get('/checkIfRegistered', (req, res, next) => {
                 if(err){
                     res.status(500).json({message: "Volunteer email check went bad."});
                     return;
-                }
-
-                if(foundVolunteer){
+                }else if(foundVolunteer){
                     res.status(400).json({ message: 'Email already registered. Try to login' });
                     return;
+                }else {
+                    res.status(200).json({ message: 'Email not registered' });
                 }
-
-                res.status(200).json({});
-
             });
         }
     });
