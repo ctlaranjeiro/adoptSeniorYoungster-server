@@ -74,7 +74,7 @@ app.locals.title = 'Adopt Senior Youngster';
 app.use(
   cors({
     credentials: true,
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000', 'http://adopt-senior-youngster.s3-website-eu-west-1.amazonaws.com']
   })
 );
 
