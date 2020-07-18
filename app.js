@@ -88,8 +88,6 @@ app.use('/api', require('./routes/editVolunteer-routes'));
 app.use('/api', require('./routes/reviews-routes'));
 app.use('/api', require('./routes/checkIfRegistered-routes'));
 app.use('/api', require('./routes/profilePicture-routes'));
-app.use('/api', require('./routes/reports-routes'));
-
-
+app.use('/api', require('./routes/getAccountInfo'));
 
 module.exports = app;
