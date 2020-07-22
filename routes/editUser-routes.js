@@ -11,7 +11,7 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     const currentUser = req.user;
     const currentId = req.user._id;
     // console.log('currentUser', currentUser);
-    // console.log('id', currentUser._id);
+    //console.log('id', currentUser._id);
     const action = req.params.action;
 
     function capitalizeFirstLetter(string) {

@@ -90,5 +90,6 @@ app.use('/api', require('./routes/reviews-routes'));
 app.use('/api', require('./routes/checkIfRegistered-routes'));
 app.use('/api', require('./routes/profilePicture-routes'));
 app.use('/api', require('./routes/getAccountInfo'));
+app.use('/api', require('./routes/getAllVolunteers'));
 
 module.exports = app;
