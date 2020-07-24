@@ -123,6 +123,11 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
 
     // SKILLS
     if(action === 'skills') {
+        if (!healthCare && !houseCare && !displacements && !grocery && !mentor) {
+            res.status(400).json({ message: 'Please, select at least one option from Skills.' });
+            return;
+        }
+
         Volunteer.updateOne({ _id: currentId }, { $set: {
             skills: {
                 healthCare: healthCare,
@@ -150,6 +155,11 @@ editVolunteerRoutes.put('/volunteer/:id/edit/:action', (req, res, next) => {
 
     // AVAILABILITY
     if(action === 'availablePeriods') {
+        if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
+            res.status(400).json({ message: 'Please, select at least one option from Availability.' });
+            return;
+        }
+
         Volunteer.updateOne({ _id: currentId }, { $set: {
             availablePeriods: {
                 morning: morning,
