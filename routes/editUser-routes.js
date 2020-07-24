@@ -106,7 +106,7 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     }
 
     //specific needs
-    if (!healthCare && !houseCare && !displacements && !grocery && !mentor) {
+    if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
         res.status(400).json({ message: 'Please, select at least one option from Needs.' });
         return;
     }
