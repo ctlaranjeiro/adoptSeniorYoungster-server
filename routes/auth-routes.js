@@ -71,20 +71,17 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             res.status(400).json({ message: 'Provide password' });
             return;
         }
+        // CHECK PASSWORD LENGTH
+        if(password.length < 6){
+            res.status(400).json({ message: 'Please make your password at least 6 characters long for security purposes.' });
+            return;
+        }
         if (!firstName) {
             res.status(400).json({ message: 'Provide first name' });
             return;
         }
         if (!lastName) {
             res.status(400).json({ message: 'Provide last name' });
-            return;
-        }
-        if (!gender) {
-            res.status(400).json({ message: 'Provide gender' });
-            return;
-        }
-        if (!birthDate) {
-            res.status(400).json({ message: 'Provide birth date' });
             return;
         }
         if (!address) {
@@ -95,12 +92,25 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             res.status(400).json({ message: 'Provide phone number' });
             return;
         }
+        // CHECK PHONE NUMBER LENGTH
+        if(phoneNumber.length !== 9){
+            res.status(400).json({ message: 'Please insert a valid phone number with 9 digits.' });
+            return;
+        }
+        if (!gender) {
+            res.status(400).json({ message: 'Provide gender' });
+            return;
+        }
+        if (!birthDate) {
+            res.status(400).json({ message: 'Provide birth date' });
+            return;
+        }
         if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
-            res.status(400).json({ message: 'Provide schedule preferences: morning, afternoon, evening, night, over night or full day' });
+            res.status(400).json({ message: 'Select at least one option from Schedule Preferences' });
             return;
         }
         if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
-            res.status(400).json({ message: 'Provide needs: health care, house care, displacements, grocery or pupil' });
+            res.status(400).json({ message: 'Select at least one option from Needs' });
             return;
         }
         if (!emergFirstName) {
@@ -111,35 +121,21 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
             res.status(400).json({ message: "Provide emergency contact's last name" });
             return;
         }
-        if (!emergPhoneNumber) {
-            res.status(400).json({ message: "Provide emergency contact's phone number" });
-            return;
-        }
         if (!emergEmail) {
             res.status(400).json({ message: "Provide emergency contact's email" });
             return;
         }
-        if (!emergAddress) {
-            res.status(400).json({ message: "Provide emergency contact's address" });
+        if (!emergPhoneNumber) {
+            res.status(400).json({ message: "Provide emergency contact's phone number" });
             return;
         }
-
-
-        // CHECK PASSWORD LENGTH
-        if(password.length < 6){
-            res.status(400).json({ message: 'Please make your password at least 6 characters long for security purposes.' });
-            return;
-        }
-
-        // CHECK PHONE NUMBER LENGTH
-        if(phoneNumber.length !== 9){
-            res.status(400).json({ message: 'Please insert a valid phone number with 9 digits.' });
-            return;
-        }
-
         // CHECK EMERGENCY CONTACT PHONE NUMBER LENGTH
         if(emergPhoneNumber.length !== 9){
             res.status(400).json({ message: 'Please insert an Emergency Contact valid phone number with 9 digits.' });
+            return;
+        }
+        if (!emergAddress) {
+            res.status(400).json({ message: "Provide emergency contact's address" });
             return;
         }
 
