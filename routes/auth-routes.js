@@ -64,78 +64,78 @@ authRoutes.post('/signup/:accountType', (req, res, next) => {
     
         // CHECK IF FIELDS EXIST
         if (!email) {
-          res.status(400).json({ message: 'Provide email' });
+          res.status(400).json({ message: 'Please, fill in your email.' });
           return;
         }
         if (!password) {
-            res.status(400).json({ message: 'Provide password' });
+            res.status(400).json({ message: 'Please, create a password.' });
             return;
         }
         // CHECK PASSWORD LENGTH
         if(password.length < 6){
-            res.status(400).json({ message: 'Please make your password at least 6 characters long for security purposes.' });
+            res.status(400).json({ message: 'Password must be at least 6 characters long.' });
             return;
         }
         if (!firstName) {
-            res.status(400).json({ message: 'Provide first name' });
+            res.status(400).json({ message: 'Please, fill in your first name.' });
             return;
         }
         if (!lastName) {
-            res.status(400).json({ message: 'Provide last name' });
+            res.status(400).json({ message: 'Please, fill in your last name.' });
             return;
         }
         if (!address) {
-            res.status(400).json({ message: 'Provide address' });
+            res.status(400).json({ message: 'Please, fill in your address' });
             return;
         }
         if (!phoneNumber) {
-            res.status(400).json({ message: 'Provide phone number' });
+            res.status(400).json({ message: 'Please, fill in your phone number' });
             return;
         }
         // CHECK PHONE NUMBER LENGTH
         if(phoneNumber.length !== 9){
-            res.status(400).json({ message: 'Please insert a valid phone number with 9 digits.' });
+            res.status(400).json({ message: 'Please, insert a valid phone number with 9 digits.' });
             return;
         }
         if (!gender) {
-            res.status(400).json({ message: 'Provide gender' });
+            res.status(400).json({ message: 'Please, select a gender' });
             return;
         }
         if (!birthDate) {
-            res.status(400).json({ message: 'Provide birth date' });
+            res.status(400).json({ message: 'Please, fill in your birth date' });
             return;
         }
         if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
-            res.status(400).json({ message: 'Select at least one option from Schedule Preferences' });
+            res.status(400).json({ message: 'Please, select at least one option from Schedule Preferences' });
             return;
         }
         if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
-            res.status(400).json({ message: 'Select at least one option from Needs' });
+            res.status(400).json({ message: 'Please, select at least one option from Needs' });
             return;
         }
         if (!emergFirstName) {
-            res.status(400).json({ message: "Provide emergency contact's first name" });
+            res.status(400).json({ message: "Please, fill in Emergency Contact first name" });
             return;
         }
         if (!emergLastName) {
-            res.status(400).json({ message: "Provide emergency contact's last name" });
+            res.status(400).json({ message: "Please, fill in Emergency Contact last name" });
             return;
         }
         if (!emergEmail) {
-            res.status(400).json({ message: "Provide emergency contact's email" });
+            res.status(400).json({ message: "Please, fill in Emergency Contact's email" });
             return;
         }
         if (!emergPhoneNumber) {
-            res.status(400).json({ message: "Provide emergency contact's phone number" });
+            res.status(400).json({ message: "Please, fill in Emergency Contact's phone number" });
             return;
         }
         // CHECK EMERGENCY CONTACT PHONE NUMBER LENGTH
         if(emergPhoneNumber.length !== 9){
-            res.status(400).json({ message: 'Please insert an Emergency Contact valid phone number with 9 digits.' });
+            res.status(400).json({ message: "Please, insert a valid Emergency Contact's phone number with 9 digits." });
             return;
         }
         if (!emergAddress) {
-            res.status(400).json({ message: "Provide emergency contact's address" });
+            res.status(400).json({ message: "Please, fill in Emergency Contact's address" });
             return;
         }
 
