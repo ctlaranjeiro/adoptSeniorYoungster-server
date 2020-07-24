@@ -73,10 +73,6 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 
     // ---- CHECKBOX VALUES 
     //schedule preferences
-    if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
-        res.status(400).json({ message: 'Please, select at least one option from Schedule Preferences.' });
-        return;
-    }
     if(!morning){
         morning = false;
     }
@@ -106,10 +102,6 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     }
 
     //specific needs
-    if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
-        res.status(400).json({ message: 'Please, select at least one option from Needs.' });
-        return;
-    }
     if(!healthCare){
         healthCare = false;
     }
@@ -163,6 +155,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 
     //SCHEDULE
     if(action === 'schedulePreferences'){
+        if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
+            res.status(400).json({ message: 'Please, select at least one option from Schedule Preferences.' });
+            return;
+        }
         User.updateOne({ _id: currentId }, { $set: { 
             schedulePreference: {
                 morning: morning,
@@ -185,6 +181,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 
     //NEEDS
     if(action === 'specificNeeds'){
+        if (!healthCare && !houseCare && !displacements && !grocery && !pupil) {
+            res.status(400).json({ message: 'Please, select at least one option from Needs.' });
+            return;
+        }
         User.updateOne({ _id: currentId }, { $set: { 
             specificNeeds: {
                 healthCare: healthCare,
