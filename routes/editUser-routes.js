@@ -73,6 +73,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
 
     // ---- CHECKBOX VALUES 
     //schedule preferences
+    if (!morning && !afternoon && !evening && !night && !overNight && !fullDay) {
+        res.status(400).json({ message: 'Please, select at least one option from Schedule Preferences.' });
+        return;
+    }
     if(!morning){
         morning = false;
     }
@@ -102,6 +106,10 @@ editUserRoutes.put('/user/:id/edit/:action', (req, res, next) => {
     }
 
     //specific needs
+    if (!healthCare && !houseCare && !displacements && !grocery && !mentor) {
+        res.status(400).json({ message: 'Please, select at least one option from Needs.' });
+        return;
+    }
     if(!healthCare){
         healthCare = false;
     }
