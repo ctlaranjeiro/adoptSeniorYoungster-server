@@ -58,7 +58,7 @@ app.use(favicon(path.join(__dirname, 'public', 'images', 'favicon.ico')));
 // SESSION SETTINGS:
 app.use(session ({
   secret: "adoptSeniorYoungster",
-  resave: false,
+  resave: true,
   saveUnitialized: true,
   rolling: true,
   cookie: { expires: 600000, secure: true }
