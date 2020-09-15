@@ -60,7 +60,7 @@ app.use(session ({
   resave: true,
   saveUnitialized: true,
   rolling: true,
-  cookie: { expires: 600000 }
+  cookie: { maxAge: 600000 }
 }));
 
 // PASSPORT SETTINGS:
